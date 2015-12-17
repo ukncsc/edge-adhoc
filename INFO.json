@@ -1,0 +1,8 @@
+{ "name":"certuk_adhoc",
+  "description":"CERT-UK ad-hoc query adapter",
+  "id":"346c1ed7-d557-4776-ae9b-ff0648b49139",
+  "publisher": "CERT-UK",
+  "edge_min": "2.4.*",
+  "edge_max": "2.6.*",
+  "version": "development"
+}

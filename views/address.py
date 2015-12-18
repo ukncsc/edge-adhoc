@@ -4,7 +4,7 @@ from adapters.certuk_adhoc.query.address import get_matches
 from adapters.certuk_adhoc.common.logger import log_error
 
 from edge.tools import StopWatch
-from users.decorators import JsonResponse
+from django.http.response import JsonResponse
 
 
 @csrf_exempt

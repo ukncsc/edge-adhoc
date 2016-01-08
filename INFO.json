@@ -3,6 +3,6 @@
   "id":"346c1ed7-d557-4776-ae9b-ff0648b49139",
   "publisher": "CERT-UK",
   "edge_min": "2.4.*",
-  "edge_max": "2.6.*",
+  "edge_max": "2.7.*",
   "version": "development"
 }

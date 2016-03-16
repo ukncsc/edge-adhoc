@@ -2,15 +2,15 @@
 from mongoengine.connection import get_db
 
 
-def get_matches(addresses):
-    if not addresses:
+def get_addresses(data):
+    if not data:
         raise Exception("No addresses supplied")
     matches_cursor = get_db().stix.aggregate([
         {
             '$match': {
                 'data.summary.type': 'AddressObjectType',
                 'data.summary.value': {
-                    '$in': addresses
+                    '$in': data
                 }
             }
         },

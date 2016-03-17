@@ -16,13 +16,13 @@ def get_domain_names(data):
                 '$group': {
                     '_id': '$data.summary.value',
                     'objects': {
-                        '$push': {
-                            'id': '$_id',
-                            'created on': '$created_on'
-                        }
+                        '$push':'$_id'
                     }
                 }
         },
+        {
+            '$sort': {'_id': 1}
+        }
     ], cursor={})
 
     return matches_cursor

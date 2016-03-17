@@ -58,10 +58,11 @@ def domain_names(request):
         raw_body = request.body
         names = REGEX_ADDRESS_DELIMITER.split(raw_body)
         matches_cursor = get_domain_names(cleanse_data_list(names))
-        matches = {}
+        matches = []
         for match_result in matches_cursor:
-            name = match_result['_id']
-            matches[name] = match_result['objects']
+            matches.append({
+                match_result['_id']: match_result['objects']
+            })
         return JsonResponse({
             'duration': '%.2f' %elapsed.ms(),
             'matches': matches,

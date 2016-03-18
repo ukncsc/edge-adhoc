@@ -3,6 +3,7 @@ import re
 from django.views.decorators.csrf import csrf_exempt
 
 from adapters.certuk_adhoc.query.query_object_type import get_object_type
+from adapters.certuk_adhoc.query.file_hashes import get_file_hashes
 from adapters.certuk_adhoc.common.logger import log_error
 from adapters.certuk_adhoc.query.cleanse_data import cleanse_data_list
 
@@ -79,3 +80,19 @@ def domain_names(request):
         return generate_response(matches, request, elapsed)
     except Exception as e:
         return generate_error_response("domain_name", elapsed, e)
+
+@csrf_exempt
+def file_hashes(request):
+    if not request.method == 'POST':
+        return JsonResponse({'Request must be': 'POST'},status=405)
+
+    elapsed = StopWatch()
+    try:
+        raw_body = request.body
+        file_hashes = REGEX_ADDRESS_DELIMITER.split(raw_body)
+        file_hashes_upper = [x.upper() for x in file_hashes]
+        matches_cursor = get_file_hashes(cleanse_data_list(file_hashes_upper))
+        matches = generate_matches_array(matches_cursor)
+        return generate_response(matches, request, elapsed)
+    except Exception as e:
+        return generate_error_response("file_hash",elapsed,e)

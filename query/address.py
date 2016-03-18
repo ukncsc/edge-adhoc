@@ -21,6 +21,9 @@ def get_addresses(data):
                     '$push': '$_id'
                 }
             }
+        },
+        {
+            '$sort': {'_id':1}
         }
     ], cursor={})
 

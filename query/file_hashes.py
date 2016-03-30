@@ -23,10 +23,7 @@ def get_file_hashes(data):
             '$group': {
                 '_id': '$data.api.object.properties.hashes.type',
                 'objects': {
-                    '$push': {
-                        'id':'$_id',
-                        'hash value': '$data.api.object.properties.hashes.simple_hash_value'
-                    }
+                    '$push': '$_id'
                 }
             }
         },

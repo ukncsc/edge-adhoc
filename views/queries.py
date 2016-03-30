@@ -16,9 +16,19 @@ REGEX_ADDRESS_DELIMITER = re.compile("[\n,]")
 def generate_matches_array(matches_cursor):
     matches = []
     for match_result in matches_cursor:
-        matches.append({
-            match_result['_id']: match_result['objects']
-        })
+        if isinstance(match_result['_id'], list):
+            list_id = ""
+            for match in match_result['_id']:
+                list_id += match
+                list_id += " - "
+            list_id = list_id[0:-3]
+            matches.append({
+                list_id: match_result['objects']
+            })
+        else:
+            matches.append({
+                match_result['_id']: match_result['objects']
+            })
     return matches
 
 def plain_text_response(matches):
@@ -28,6 +38,7 @@ def plain_text_response(matches):
             items = plain_text + ("%s - %s" % (query, ", ".join(ids))) + "\n"
             plain_text = items
     return plain_text
+
 
 def generate_response(matches, request, elapsed):
     if request.META.get('HTTP_ACCEPT') in {'application/json', 'text/json'}:
@@ -90,9 +101,8 @@ def file_hashes(request):
     try:
         raw_body = request.body
         file_hashes = REGEX_ADDRESS_DELIMITER.split(raw_body)
-        file_hashes_upper = [x.upper() for x in file_hashes]
-        matches_cursor = get_file_hashes(cleanse_data_list(file_hashes_upper))
+        matches_cursor = get_file_hashes(cleanse_data_list(file_hashes))
         matches = generate_matches_array(matches_cursor)
         return generate_response(matches, request, elapsed)
     except Exception as e:
-        return generate_error_response("file_hash",elapsed,e)
+        return generate_error_response("file_hash", elapsed, e)

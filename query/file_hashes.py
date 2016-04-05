@@ -14,14 +14,21 @@ def get_file_hashes(data):
         },
         {
             '$match': {
-                'data.api.object.properties.hashes.type': {
-                    '$in': data
-                }
+                '$or': [ {'data.api.object.properties.hashes.type.value': {
+                    '$in': data }
+                }, {'data.api.object.properties.hashes.type': {
+                    '$in': data}
+            }]
+            }
+        },
+        {
+            '$project': {
+                'data.api.object.properties.hashes.type': '$data.api.object.properties.hashes.type.value'
             }
         },
         {
             '$group': {
-                '_id': '$data.api.object.properties.hashes.type',
+                '_id': '$data.api.object.properties.hashes.type.value',
                 'objects': {
                     '$push': '$_id'
                 }

@@ -3,7 +3,7 @@ import re
 from django.views.decorators.csrf import csrf_exempt
 
 from adapters.certuk_adhoc.query.query_object_type import get_object_type
-from adapters.certuk_adhoc.query.file_hashes import get_file_hashes
+from adapters.certuk_adhoc.query.file_hashes import get_file_hashes_xsi, get_file_hashes_no_xsi
 from adapters.certuk_adhoc.common.logger import log_error
 from adapters.certuk_adhoc.query.cleanse_data import cleanse_data_list
 
@@ -12,6 +12,19 @@ from django.http.response import HttpResponse, JsonResponse
 
 REGEX_ADDRESS_DELIMITER = re.compile("[\n,]")
 
+
+def group_matches_array(xsi, no_xsi):
+    matches = []
+    hashes = {}
+    for hash_ in xsi:
+        id = hash_['_id']
+        if id in hashes.keys():
+            for values in hash_['objects']:
+                hashes[id].append(values)
+        else:
+            hashes[id] = hash_['objects']
+    matches.append(hashes)
+    return matches
 
 def generate_matches_array(matches_cursor):
     matches = []
@@ -33,8 +46,8 @@ def generate_matches_array(matches_cursor):
 
 def plain_text_response(matches):
     plain_text = ""
-    for x in matches:
-        for query, ids in x.iteritems():
+    for file_info in matches:
+        for query, ids in file_info.iteritems():
             items = plain_text + ("%s - %s" % (query, ", ".join(ids))) + "\n"
             plain_text = items
     return plain_text
@@ -101,8 +114,11 @@ def file_hashes(request):
     try:
         raw_body = request.body
         file_hashes = REGEX_ADDRESS_DELIMITER.split(raw_body)
-        matches_cursor = get_file_hashes(cleanse_data_list(file_hashes))
-        matches = generate_matches_array(matches_cursor)
-        return generate_response(matches, request, elapsed)
+        matches_cursor_xsi = get_file_hashes_xsi(cleanse_data_list(file_hashes))
+        matches_cursor_no_xsi = get_file_hashes_no_xsi(cleanse_data_list(file_hashes))
+        matches_xsi = generate_matches_array(matches_cursor_xsi)
+        matches_no_xsi = generate_matches_array(matches_cursor_no_xsi)
+        # group_matches = group_matches_array(matches_xsi, matches_no_xsi)
+        return generate_response(matches_no_xsi, request, elapsed)
     except Exception as e:
         return generate_error_response("file_hash", elapsed, e)

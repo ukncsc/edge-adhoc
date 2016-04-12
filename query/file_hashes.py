@@ -2,7 +2,7 @@ from mongoengine.connection import get_db
 
 def get_file_hashes(data):
     if not data:
-        raise Exception("No file hashes supplied")
+        raise Exception("No file hash types supplied")
     matches_cursor = get_db().stix.aggregate([
         {
             '$match': {

@@ -17,11 +17,7 @@ def generate_matches_array(matches_cursor):
     matches = []
     for match_result in matches_cursor:
         if isinstance(match_result['_id'], list):
-            list_id = ""
-            for match in match_result['_id']:
-                list_id += match
-                list_id += " - "
-            list_id = list_id[0:-3]
+            list_id = " - ".join(match_result['_id'])
             matches.append({
                 list_id: match_result['objects']
             })
@@ -35,8 +31,7 @@ def plain_text_response(matches):
     plain_text = ""
     for file_info in matches:
         for query, ids in file_info.iteritems():
-            items = plain_text + ("%s - %s" % (query, ", ".join(ids))) + "\n"
-            plain_text = items
+            plain_text += ("%s - %s" % (query, ", ".join(ids))) + "\n"
     return plain_text
 
 

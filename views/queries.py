@@ -3,6 +3,7 @@ import re
 from django.views.decorators.csrf import csrf_exempt
 
 from adapters.certuk_adhoc.query.query_object_type import get_object_type
+from adapters.certuk_adhoc.query.file_hashes import get_file_hashes
 from adapters.certuk_adhoc.common.logger import log_error
 from adapters.certuk_adhoc.query.cleanse_data import cleanse_data_list
 
@@ -15,18 +16,24 @@ REGEX_ADDRESS_DELIMITER = re.compile("[\n,]")
 def generate_matches_array(matches_cursor):
     matches = []
     for match_result in matches_cursor:
-        matches.append({
-            match_result['_id']: match_result['objects']
-        })
+        if isinstance(match_result['_id'], list):
+            list_id = " - ".join(match_result['_id'])
+            matches.append({
+                list_id: match_result['objects']
+            })
+        else:
+            matches.append({
+                match_result['_id']: match_result['objects']
+            })
     return matches
 
 def plain_text_response(matches):
     plain_text = ""
-    for x in matches:
-        for query, ids in x.iteritems():
-            items = plain_text + ("%s - %s" % (query, ", ".join(ids))) + "\n"
-            plain_text = items
+    for file_info in matches:
+        for query, ids in file_info.iteritems():
+            plain_text += ("%s - %s" % (query, ", ".join(ids))) + "\n"
     return plain_text
+
 
 def generate_response(matches, request, elapsed):
     if request.META.get('HTTP_ACCEPT') in {'application/json', 'text/json'}:
@@ -79,3 +86,18 @@ def domain_names(request):
         return generate_response(matches, request, elapsed)
     except Exception as e:
         return generate_error_response("domain_name", elapsed, e)
+
+@csrf_exempt
+def file_hashes(request):
+    if not request.method == 'POST':
+        return JsonResponse({'Request must be': 'POST'},status=405)
+
+    elapsed = StopWatch()
+    try:
+        raw_body = request.body
+        file_hashes = REGEX_ADDRESS_DELIMITER.split(raw_body)
+        matches_cursor = get_file_hashes(cleanse_data_list(file_hashes))
+        matches = generate_matches_array(matches_cursor)
+        return generate_response(matches, request, elapsed)
+    except Exception as e:
+        return generate_error_response("file_hash", elapsed, e)

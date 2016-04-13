@@ -21,15 +21,11 @@ class QueryResponseTests(unittest.TestCase):
 
     hash_array_plain_text = "MD5 - observable1, observable2, observable3" +"\n" + "SHA512 - observable10, observable20" + "\n"
 
-    def test_correct_matches_array_list(self):
+    def test_correct_matches_array_list_id(self):
        self.assertEqual(generate_matches_array(self.address_id_list), self.address_id_list_result)
 
-    def test_correct_matches_array_no_list(self):
+    def test_correct_matches_array_no_list_id(self):
         self.assertEqual(generate_matches_array(self.hash_array), self.hash_array_result)
 
     def test_correct_plain_text_response(self):
         self.assertEqual(plain_text_response(self.hash_array_result), self.hash_array_plain_text)
-
-
-
-

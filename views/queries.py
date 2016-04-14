@@ -101,3 +101,19 @@ def file_hashes(request):
         return generate_response(matches, request, elapsed)
     except Exception as e:
         return generate_error_response("file_hash", elapsed, e)
+
+@csrf_exempt
+def file_names(request):
+    if not request.method == 'POST':
+        return JsonResponse({'Request must be': 'POST'}, status=405)
+
+    elapsed = StopWatch()
+    try:
+        raw_body = request.body
+        file_names = REGEX_ADDRESS_DELIMITER.split(raw_body)
+        matches_cursor = get_object_type(cleanse_data_list(file_names), 'FileObjectType')
+        matches = generate_matches_array(matches_cursor)
+        return generate_response(matches, request, elapsed)
+    except Exception as e:
+        return generate_error_response("file_name", elapsed, e)
+

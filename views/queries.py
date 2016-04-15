@@ -63,34 +63,35 @@ def generate_matches(request, object_type):
     matches = generate_matches_array(matches_cursor)
     return matches
 
-@csrf_exempt
-def address(request):
+
+def response_from_bulk_search(request, object_type):
     if not request.method == 'POST':
         return JsonResponse({"Request must be": "POST"}, status=405)
 
     elapsed = StopWatch()
     try:
-        matches = generate_matches(request,'AddressObjectType')
+        matches = generate_matches(request, object_type)
         return generate_response(matches, request, elapsed)
     except Exception as e:
-        return generate_error_response("Bulk address", elapsed, e)
+        return generate_error_response(object_type, elapsed, e)
+
+
+@csrf_exempt
+def address(request):
+    return response_from_bulk_search(request, 'AddressObjectType')
 
 @csrf_exempt
 def domain_names(request):
-    if not request.method == 'POST':
-        return JsonResponse({"Request must be": "POST"}, status=405)
+    return response_from_bulk_search(request, 'DomainNameObjectType')
 
-    elapsed = StopWatch()
-    try:
-        matches = generate_matches(request, 'DomainNameObjectType')
-        return generate_response(matches, request, elapsed)
-    except Exception as e:
-        return generate_error_response("Bulk domain name", elapsed, e)
+@csrf_exempt
+def file_names(request):
+    return response_from_bulk_search(request, 'FileObjectType')
 
 @csrf_exempt
 def file_hashes(request):
     if not request.method == 'POST':
-        return JsonResponse({'Request must be': 'POST'},status=405)
+        return JsonResponse({'Request must be': 'POST'}, status=405)
 
     elapsed = StopWatch()
     try:
@@ -101,15 +102,3 @@ def file_hashes(request):
         return generate_response(matches, request, elapsed)
     except Exception as e:
         return generate_error_response("Bulk file hash", elapsed, e)
-
-@csrf_exempt
-def file_names(request):
-    if not request.method == 'POST':
-        return JsonResponse({'Request must be': 'POST'}, status=405)
-
-    elapsed = StopWatch()
-    try:
-        matches = generate_matches(request, 'FileObjectType')
-        return generate_response(matches, request, elapsed)
-    except Exception as e:
-        return generate_error_response("Bulk file name", elapsed, e)

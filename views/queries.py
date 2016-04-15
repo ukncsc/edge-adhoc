@@ -2,7 +2,7 @@ import re
 
 from django.views.decorators.csrf import csrf_exempt
 
-from adapters.certuk_adhoc.query.query_object_type import get_object_type
+from adapters.certuk_adhoc.query.query_object_type import matches_on_object_type
 from adapters.certuk_adhoc.query.file_hashes import get_file_hashes
 from adapters.certuk_adhoc.common.logger import log_error
 from adapters.certuk_adhoc.query.cleanse_data import cleanse_data_list
@@ -47,14 +47,21 @@ def generate_response(matches, request, elapsed):
         return HttpResponse(content=plain_text, content_type='text/plain')
 
 
-def generate_error_response(method_name, elapsed, e):
-    log_error(e, 'adapter' + method_name, method_name + ' search failed')
+def generate_error_response(type_of_search, elapsed, e):
+    log_error(e, 'adapter' + type_of_search, type_of_search + ' search failed')
     return JsonResponse({
         'duration': '%.2f' % elapsed.ms(),
         'message': e.message,
         'state': 'error'
     }, status=500)
 
+
+def generate_matches(request, object_type):
+    raw_body = request.body
+    bulk_search = REGEX_ADDRESS_DELIMITER.split(raw_body)
+    matches_cursor = matches_on_object_type(cleanse_data_list(bulk_search), object_type)
+    matches = generate_matches_array(matches_cursor)
+    return matches
 
 @csrf_exempt
 def address(request):
@@ -63,14 +70,10 @@ def address(request):
 
     elapsed = StopWatch()
     try:
-        raw_body = request.body
-        addresses = REGEX_ADDRESS_DELIMITER.split(raw_body)
-        matches_cursor = get_object_type(cleanse_data_list(addresses), 'AddressObjectType')
-        matches = generate_matches_array(matches_cursor)
+        matches = generate_matches(request,'AddressObjectType')
         return generate_response(matches, request, elapsed)
     except Exception as e:
-        return generate_error_response("address_search", elapsed, e)
-
+        return generate_error_response("Bulk address", elapsed, e)
 
 @csrf_exempt
 def domain_names(request):
@@ -79,13 +82,10 @@ def domain_names(request):
 
     elapsed = StopWatch()
     try:
-        raw_body = request.body
-        names = REGEX_ADDRESS_DELIMITER.split(raw_body)
-        matches_cursor = get_object_type(cleanse_data_list(names), 'DomainNameObjectType')
-        matches = generate_matches_array(matches_cursor)
+        matches = generate_matches(request, 'DomainNameObjectType')
         return generate_response(matches, request, elapsed)
     except Exception as e:
-        return generate_error_response("domain_name", elapsed, e)
+        return generate_error_response("Bulk domain name", elapsed, e)
 
 @csrf_exempt
 def file_hashes(request):
@@ -100,7 +100,7 @@ def file_hashes(request):
         matches = generate_matches_array(matches_cursor)
         return generate_response(matches, request, elapsed)
     except Exception as e:
-        return generate_error_response("file_hash", elapsed, e)
+        return generate_error_response("Bulk file hash", elapsed, e)
 
 @csrf_exempt
 def file_names(request):
@@ -109,11 +109,7 @@ def file_names(request):
 
     elapsed = StopWatch()
     try:
-        raw_body = request.body
-        file_names = REGEX_ADDRESS_DELIMITER.split(raw_body)
-        matches_cursor = get_object_type(cleanse_data_list(file_names), 'FileObjectType')
-        matches = generate_matches_array(matches_cursor)
+        matches = generate_matches(request, 'FileObjectType')
         return generate_response(matches, request, elapsed)
     except Exception as e:
-        return generate_error_response("file_name", elapsed, e)
-
+        return generate_error_response("Bulk file name", elapsed, e)

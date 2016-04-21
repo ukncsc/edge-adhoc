@@ -2,7 +2,7 @@
 from mongoengine.connection import get_db
 
 
-def matches_on_object_type(data, objectType):
+def matches_on_summary_value(data, objectType):
     if not data:
         raise Exception("No addresses supplied for: " + objectType)
     matches_cursor = get_db().stix.aggregate([

@@ -1,12 +1,12 @@
 from mongoengine.connection import get_db
 
-def get_file_hashes(data):
+def get_file_hashes(data, objectType):
     if not data:
         raise Exception("No file hash types supplied")
     matches_cursor = get_db().stix.aggregate([
         {
             '$match': {
-                'data.summary.type': 'FileObjectType'
+                'data.summary.type': objectType
             }
         },
         {

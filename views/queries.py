@@ -89,6 +89,15 @@ def file_names(request):
     return response_from_bulk_search(request, 'FileObjectType')
 
 @csrf_exempt
+def email_subject(request):
+    return response_from_bulk_search(request, 'EmailMessageObjectType')
+
+@csrf_exempt
+def email_address_all(request):
+    pass
+
+
+@csrf_exempt
 def file_hashes(request):
     if not request.method == 'POST':
         return JsonResponse({'Request must be': 'POST'}, status=405)

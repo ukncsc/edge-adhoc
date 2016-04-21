@@ -7,9 +7,11 @@ search_urls = [
     (r'^file_hashes/$','queries.file_hashes',None),
     (r'^file_names/$', 'queries.file_names', None),
     (r'^email/subject/$', 'queries.email_subject', None),
+    (r'^email/address/from/$', 'queries.email_address_from', None),
     (r'^email/address/to/$', 'queries.email_address_to', None),
     (r'^email/address/cc/$', 'queries.email_address_cc', None),
-    (r'^email/address/bcc/$', 'queries.email_address_bcc', None)
+    (r'^email/address/bcc/$', 'queries.email_address_bcc', None),
+    (r'^email/address/$', 'queries.email_address_all', None)
 ]
 
 search_url_patterns = [url(item[0], item[1], name=item[2]) for item in search_urls]

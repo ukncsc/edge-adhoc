@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from adapters.certuk_adhoc.query.query_object_type import matches_on_summary_value
 from adapters.certuk_adhoc.query.file_hashes import get_file_hashes
-from adapters.certuk_adhoc.query.email_address_field import matches_on_email_address_field
+from adapters.certuk_adhoc.query.email_address_field import matches_on_email_address_field, matches_on_email_address_from
 from adapters.certuk_adhoc.common.logger import log_error
 from adapters.certuk_adhoc.query.cleanse_data import cleanse_data_list
 
@@ -71,6 +71,12 @@ def response_from_bulk_search(request, object_type, query_function):
     except Exception as e:
         return generate_error_response(object_type, elapsed, e)
 
+def email_address_helper(request, object_type, query_function):
+    raw_body = request.body
+    bulk_search = REGEX_ADDRESS_DELIMITER.split(raw_body)
+    matches_cursor = query_function(cleanse_data_list(bulk_search), object_type)
+    matches = generate_matches_array(matches_cursor)
+    return matches
 
 @csrf_exempt
 def address(request):
@@ -93,6 +99,10 @@ def email_subject(request):
     return response_from_bulk_search(request, 'EmailMessageObjectType', matches_on_summary_value)
 
 @csrf_exempt
+def email_address_from(request):
+    return response_from_bulk_search(request,'EmailMessageObjectType', matches_on_email_address_from)
+
+@csrf_exempt
 def email_address_to(request):
     return response_from_bulk_search(request, 'to', matches_on_email_address_field)
 
@@ -103,3 +113,38 @@ def email_address_cc(request):
 @csrf_exempt
 def email_address_bcc(request):
     return response_from_bulk_search(request, 'bcc', matches_on_email_address_field)
+
+@csrf_exempt
+def email_address_all(request):
+    if not request.method == 'POST':
+        return JsonResponse({"Request must be": "POST"}, status=405)
+
+    elapsed = StopWatch()
+    try:
+        address_from = email_address_helper(request, 'EmailMessageObjectType', matches_on_email_address_from)
+        address_to = email_address_helper(request, 'to', matches_on_email_address_field)
+        address_cc = email_address_helper(request, 'cc', matches_on_email_address_field)
+        address_bcc = email_address_helper(request, 'bcc', matches_on_email_address_field)
+        address_fields = [address_from, address_to, address_cc, address_bcc]
+
+        def matcher(address_to_match, map_of_ids):
+            for address_match in address_to_match:
+                for match, ids in address_match.iteritems():
+                    for id in ids:
+                        map_of_ids.setdefault(match, []).append(id)
+            return map_ids
+
+        map_ids={}
+        for address_field in address_fields:
+            matcher(address_field, map_ids)
+
+        matches = []
+        for address, ids in map_ids.iteritems():
+            matches.append({
+                address: ids
+            })
+
+        return generate_response(request, matches, elapsed)
+    except Exception as e:
+        return generate_error_response("All email address fields", elapsed, e)
+

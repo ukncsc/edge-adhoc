@@ -11,7 +11,8 @@ search_urls = [
     (r'^email/address/to/$', 'queries.email_address_to', None),
     (r'^email/address/cc/$', 'queries.email_address_cc', None),
     (r'^email/address/bcc/$', 'queries.email_address_bcc', None),
-    (r'^email/address/$', 'queries.email_address_all', None)
+    (r'^email/address/$', 'queries.email_address_all', None),
+    (r'^uri/$', 'queries.uri', None)
 ]
 
 search_url_patterns = [url(item[0], item[1], name=item[2]) for item in search_urls]

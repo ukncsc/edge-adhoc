@@ -132,7 +132,6 @@ def email_address_all(request):
                 for match, ids in address_match.iteritems():
                     for id in ids:
                         map_of_ids.setdefault(match, []).append(id)
-            return map_ids
 
         map_ids={}
         for address_field in address_fields:
@@ -148,3 +147,6 @@ def email_address_all(request):
     except Exception as e:
         return generate_error_response("All email address fields", elapsed, e)
 
+@csrf_exempt
+def uri(request):
+    return response_from_bulk_search(request, 'URIObjectType', matches_on_summary_value)

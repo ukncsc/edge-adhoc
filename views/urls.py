@@ -14,7 +14,7 @@ search_urls = [
     (r'^email/address/$', 'queries.email_address_all', None),
     (r'^uri/$', 'queries.uri', None),
     (r'^socket/$', 'queries.socket_full', None),
-    (r'^socket/partial/$', 'queries.socket_partial_on_ip', None)
+    (r'^socket/ip/$', 'queries.socket_partial_on_ip', None)
 ]
 
 search_url_patterns = [url(item[0], item[1], name=item[2]) for item in search_urls]

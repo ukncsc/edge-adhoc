@@ -2,7 +2,7 @@ import re
 
 from django.views.decorators.csrf import csrf_exempt
 
-from adapters.certuk_adhoc.query.socket_partial_on_ip import partial_matches_on_ip
+from adapters.certuk_adhoc.query.socket_ip import partial_matches_on_ip
 from adapters.certuk_adhoc.query.match_on_object_summary_value import matches_on_summary_value
 from adapters.certuk_adhoc.query.file_hashes import get_file_hashes
 from adapters.certuk_adhoc.query.email_address_field import matches_on_email_address_field, matches_on_email_address_from
@@ -157,6 +157,6 @@ def socket_full(request):
     return response_from_bulk_search(request, 'SocketAddressObjectType', matches_on_summary_value)
 
 @csrf_exempt
-def socket_partial_on_ip(request):
+def socket_ip(request):
     return response_from_bulk_search(request, 'SocketAddressObjectType', partial_matches_on_ip)
 

@@ -8,7 +8,7 @@ Permission is hereby granted, free of charge, to use, copy, modify, merge, distr
 
 
 # Adhoc Mod
-Edge Mod is a Soltra Edge adapter that opens API access to Soltra Edge.
+Edge Mod is a Soltra Edge adapter that provides a RESTful API access to Soltra Edge.
 
 Further documentation and guidance on features provided by the adapter are detailed in the Wiki.
 

@@ -42,7 +42,7 @@ Upgrading the adapter requires a few extra steps before following the installati
 
 
 ## Feedback
-We would welcome feedback on this adapter and the functionality it provides. Please raise an issue on GitHub or email us at taxii[at]cert[dot]gov[dot]uk
+We would welcome feedback on this adapter and the functionality it provides. Please raise an issue on GitHub.
 
 ## Thanks
 Thanks to the folks at Soltra for building a great platform for us to build this adapter on.

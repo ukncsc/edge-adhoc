@@ -8,7 +8,7 @@ Permission is hereby granted, free of charge, to use, copy, modify, merge, distr
 
 
 # Adhoc Mod
-Edge Mod is a Soltra Edge adapter that opens API access to Soltra Edge.
+Edge Mod is a Soltra Edge adapter that provides a RESTful API access to Soltra Edge.
 
 Further documentation and guidance on features provided by the adapter are detailed in the Wiki.
 
@@ -28,8 +28,9 @@ The adapter is still under active development and as such shouldn't be considere
 ## Installation
 The adapter is currently aimed at version 2.8.1 of Soltra Edge. Other versions may work but your mileage may vary. The following is carried out as a Super User on the GUI whilst on the 'Admin > Adapters' page.
 
-1. Upload and install the new adapter
-2. Click on 'Restart Services' in the 'Restart Required' box
+1. Download the packaged adapter from GitHub [https://github.com/certuk/edge-adhoc/releases/latest](https://github.com/certuk/edge-adhoc/releases/latest), this should be the `.tgz` file, not the `.tar.gz` file
+2. Upload and install the new adapter
+3. Click on 'Restart Services' in the 'Restart Required' box
 
 ## Upgrade
 Upgrading the adapter requires a few extra steps before following the installation instructions.
@@ -41,7 +42,7 @@ Upgrading the adapter requires a few extra steps before following the installati
 
 
 ## Feedback
-We would welcome feedback on this adapter and the functionality it provides. Please raise an issue on GitHub or email us at taxii[at]cert[dot]gov[dot]uk
+We would welcome feedback on this adapter and the functionality it provides. Please raise an issue on GitHub.
 
 ## Thanks
 Thanks to the folks at Soltra for building a great platform for us to build this adapter on.
